@@ -6,7 +6,6 @@ app_flask = Flask(__name__)
 
 @app_flask.route('/')
 def home():
-    # Si index.html existe à côté du main.py
     if os.path.exists("index.html"):
         return send_file('index.html')
     return "Bot ON - index.html manquant"
@@ -18,7 +17,7 @@ threading.Thread(target=run_flask, daemon=True).start()
 
 import random
 from telegram import Update
-from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
+from telegram.ext import ApplicationBuilder, MessageHandler, CommandHandler, CallbackQueryHandler, ContextTypes, filters
 from groq import Groq
 from glitch_bot1 import *
 from subcribe import *
@@ -31,7 +30,7 @@ STICKER_PACK = "classroom_by_pinterest_to_stickerbot"
 
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 sticker_ids_cache = []
-historique = {}  # un historique de conversation PAR utilisateur/chat
+historique = {}
 
 SYSTEM_PROMPT = (
     "Tu t'appelles glitch, un  mec sympa et Cool, répond pas comme une IA répond comme un humain  "
@@ -49,6 +48,9 @@ async def get_random_sticker(context: ContextTypes.DEFAULT_TYPE):
     return random.choice(sticker_ids_cache)
 
 async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if mode_poster.get(update.effective_user.id):
+        return  # en train de poster dans la chaîne, le chatbot se tait
+
     chat_id = update.effective_chat.id
     message_utilisateur = update.message.text
 
@@ -65,7 +67,6 @@ async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     historique[chat_id].append({"role": "assistant", "content": texte_reponse})
 
-    # on garde les 20 derniers messages pour pas exploser le contexte
     if len(historique[chat_id]) > 21:
         historique[chat_id] = [historique[chat_id][0]] + historique[chat_id][-20:]
 
@@ -75,13 +76,24 @@ async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_sticker(sticker_id)
 
 app = ApplicationBuilder().token(TOKEN).build()
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, chat),group=0)
-app.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS,welcome))
-app.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER,goodbye))
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, security),group=1)
+
+# --- enregistrement des membres, pour /tagall (doit tourner sur TOUS les messages) ---
+app.add_handler(MessageHandler(filters.ALL, enregistrer_membre), group=-1)
+
+# --- réception du post admin (photo ou texte), avant le chatbot ---
+app.add_handler(MessageHandler(filters.PHOTO | filters.TEXT, recevoir_post), group=0)
+
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, chat), group=1)
+app.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, welcome))
+app.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, goodbye))
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, security), group=2)
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, anti_foward), group=3)
+
 app.add_handler(CommandHandler("start", start))
-app.add_handler(CommandHandler("kick",kick))
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, anti_foward), group=2)
+app.add_handler(CommandHandler("kick", kick))
+app.add_handler(CommandHandler("tagall", tagall))
+app.add_handler(CommandHandler("post", post))
 app.add_handler(CallbackQueryHandler(bouton_clique))
+
 app.run_polling()
 
