@@ -4,11 +4,10 @@ import asyncio
 from telegram.ext import ChatMemberHandler
 from datetime import datetime, timedelta
 from telegram.constants import ParseMode
-HTML = ParseMode()
+HTML = ParseMode.HTML
 CHANEL = "https://t.me/glitch_chanel"
 chaine = "@glitch_channel"
 id = 8350799876
-TOKEN = "8504399293:AAEIlvbiNw0AiGdOkCp5KUH14B02bM997xU"
 bouton_channel = InlineKeyboardMarkup([
     [InlineKeyboardButton("🌸 GLITCH CHANNEL", url=CHANEL)]
 ])
