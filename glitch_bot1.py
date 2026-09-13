@@ -3,7 +3,8 @@ from telegram.ext import ApplicationBuilder,CommandHandler,CallbackQueryHandler,
 import asyncio
 from telegram.ext import ChatMemberHandler
 from datetime import datetime, timedelta
-
+from telegram.constants import ParseMode
+HTML = ParseMode()
 CHANEL = "https://t.me/glitch_chanel"
 chaine = "@glitch_channel"
 id = 8350799876
@@ -17,11 +18,11 @@ async def welcome(upd: Update, ctn:ContextTypes.DEFAULT_TYPE):
     mention = f'<a href="tg://user?id={user.id}">{user.first_name}</a>'
     nombre_membres = await ctn.bot.get_chat_member_count(chat_id=upd.effective_chat.id)
     for member in upd.message.new_chat_members:
-        await upd.message.reply_text(f"""BIENVENUE {mention} DANS {upd.effective_chat.title} avec {nombre_membres} Membres""",reply_markup=bouton_channel)
+        await upd.message.reply_text(f"""BIENVENUE **{member.first_name}** DANS **{upd.effective_chat.title}** avec **{nombre_membres}** Membres\n\n```Merci N'oublie pas de T'abonné```""",parse_mode="MarkdownV2",reply_markup=bouton_channel)
         
 async def goodbye(upd: Update, ctn:ContextTypes.DEFAULT_TYPE):
     gb = upd.message.left_chat_member
-    await upd.message.reply_text(f"Nous Sommes Ravie de Faire Ta connaissance By {gb.first_name}",reply_markup=bouton_channel)
+    await upd.message.reply_text(f"Nous Sommes Ravie de Faire Ta connaissance aurevoire Trés chére Cobail\n**{gb.first_name}**\n```Abonne toi```",parse_mode="MarkdownV2",reply_markup=bouton_channel)
 async def security(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
     user = upd.effective_user
     mention = f'<a href="tg://user?id={user.id}">{user.first_name}</a>'
@@ -33,7 +34,7 @@ async def security(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
                 fin_mute = datetime.now() + timedelta(hours=1)
                 await ctn.bot.delete_message(chat_id=upd.effective_chat.id,message_id=upd.message.message_id)
                 await ctn.bot.restrict_chat_member(chat_id=upd.effective_chat.id,user_id=upd.effective_user.id,permissions=ChatPermissions(can_send_messages=False),until_date=fin_mute)
-                await upd.message.reply_text(f"{mention} Les Liens ne sont pas autorises dans ce groupe, Vous pouvez plus envoyez de message jusqu'au {fin_mute}",reply_markup=bouton_channel)
+                await upd.message.reply_text(f"{mention} Les Liens ne sont pas autorises dans ce groupe, Vous pouvez plus envoyez de message jusqu'au {fin_mute}",parse_mode=HTML,reply_markup=bouton_channel)
             except:
                 pass
 
@@ -64,10 +65,12 @@ async def anti_foward(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
         nombre_avertisse = vt.get(user.id)
         mention = f'<a href="tg://user?id={user.id}">{user.first_name}</a>'
         await ctn.bot.send_message(chat_id=upd.effective_chat.id,
-                               text=f"⚠️ {mention}, le partage de messages transférés n'est pas autorisé ici avertissements {nombre_avertisse}/3.",
+                               text=f"⚠️ {mention}, le partage de messages transférés n'est pas autorisé ici avertissements **{nombre_avertisse}/3**.",
+                                parse_mode=HTML,
                                reply_markup=bouton_channel)
         if current >= 3:
             fin_mute = datetime.now() + timedelta(hours=1)
             await ctn.bot.restrict_chat_member(chat_id=upd.effective_chat.id,user_id=user.id,permissions=ChatPermissions(can_send_messages=False),until_date=fin_mute)
+            await ctn.bot.send_message(text=f"{mention} Vous Avez enfreins les regles de ce groupe vous pouvez plus Envoyé de messsage jusqu'à {fin_mute}",parse_mode=HTML)
 
 

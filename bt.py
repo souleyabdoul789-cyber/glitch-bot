@@ -1,3 +1,21 @@
+from flask import Flask, send_file
+import threading
+import os
+
+app_flask = Flask(__name__)
+
+@app_flask.route('/')
+def home():
+    # Si index.html existe à côté du main.py
+    if os.path.exists("index.html"):
+        return send_file('index.html')
+    return "Bot ON - index.html manquant"
+
+def run_flask():
+    app_flask.run(host='0.0.0.0', port=10000)
+
+threading.Thread(target=run_flask, daemon=True).start()
+
 import random
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
