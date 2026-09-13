@@ -50,6 +50,8 @@ async def kick(upd: Update,ctn: ContextTypes.DEFAULT_TYPE):
         await upd.message.reply_text("Met Moi admin pour pouvoir kick ce user",reply_markup=bouton_channel)
 
 async def anti_foward(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id == 777000:
+        return
     if upd.message.forward_origin:
         user = upd.effective_user
         current = vt.get(user.id,0) + 1 
