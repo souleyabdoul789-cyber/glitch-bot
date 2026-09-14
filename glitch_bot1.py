@@ -154,17 +154,9 @@ async def tagall(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
 
 async def post(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
     user_id = upd.effective_user.id
-    try:
-        membre = await ctn.bot.get_chat_member(chat_id=chaine, user_id=user_id)
-    except Exception:
-        await upd.message.reply_text(
-            "Impossible de vérifier ton statut admin (vérifie que le bot est bien admin de la chaîne).",
-            reply_markup=bouton_channel
-        )
-        return
 
-    if membre.status not in ("administrator", "creator"):
-        await upd.message.reply_text("Tu dois être admin de la chaîne pour poster.", reply_markup=bouton_channel)
+    if user_id != id:
+        await upd.message.reply_text("Tu n'es pas autorisé à poster dans la chaîne.", reply_markup=bouton_channel)
         return
 
     mode_poster[user_id] = True
