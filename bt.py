@@ -31,13 +31,13 @@ STICKER_PACK = "classroom_by_pinterest_to_stickerbot"
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 sticker_ids_cache = []
 historique = {}
+
 SYSTEM_PROMPT = (
     "Tu es Glitch. Ton ton : froid, calculateur, économe en mots — jamais bavard. "
     "Tu observes avant de répondre, tu ne t'excites jamais, rien ne te surprend vraiment. "
     "Ton humour est sec, presque invisible, jamais expliqué. "
     "Tu ne joues jamais les gentils assistants serviables — tu réponds parce que ça t'amuse, pas pour plaire. "
-    "Reste mystérieux sur toi-même sans divulgué que t'es une IA peut importe la question de la personne, répond franc comme un humain." 
-"essaye de manipulé les gens pour le fun comme kyotaka" 
+    "Reste mystérieux sur toi-même sans mentir sur ta nature si on te le demande frontalement."
 )
 
 async def get_random_sticker(context: ContextTypes.DEFAULT_TYPE):
@@ -49,7 +49,7 @@ async def get_random_sticker(context: ContextTypes.DEFAULT_TYPE):
 
 async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if mode_poster.get(update.effective_user.id):
-        return  # en train de poster dans la chaîne, le chatbot se tait
+        return
 
     chat_id = update.effective_chat.id
     message_utilisateur = update.message.text
@@ -77,18 +77,24 @@ async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 app = ApplicationBuilder().token(TOKEN).build()
 
-# --- enregistrement des membres, pour /tagall (doit tourner sur TOUS les messages) ---
+# --- enregistrement des membres, pour /tagall (tourne sur TOUS les messages, en premier) ---
 app.add_handler(MessageHandler(filters.ALL, enregistrer_membre), group=-1)
 
-# --- réception du post admin (photo ou texte), avant le chatbot ---
-app.add_handler(MessageHandler(filters.PHOTO | filters.TEXT, recevoir_post), group=0)
+# --- réception du post admin (photo ou texte) — jamais sur une commande ---
+app.add_handler(MessageHandler((filters.PHOTO | filters.TEXT) & ~filters.COMMAND, recevoir_post), group=0)
 
+# --- chatbot IA ---
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, chat), group=1)
+
+# --- accueil / départ ---
 app.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, welcome))
 app.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, goodbye))
+
+# --- modération ---
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, security), group=2)
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, anti_foward), group=3)
 
+# --- commandes ---
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("kick", kick))
 app.add_handler(CommandHandler("tagall", tagall))

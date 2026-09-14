@@ -1,14 +1,11 @@
 from telegram import InlineKeyboardButton, ChatPermissions, InlineKeyboardMarkup, Update
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, MessageHandler, ContextTypes, filters
-import asyncio
-from telegram.ext import ChatMemberHandler
 from datetime import datetime, timedelta
 from telegram.constants import ParseMode
 
 HTML = ParseMode.HTML
-CHANEL = "https://t.me/glitch_chanel"      # lien cliquable, pour les boutons
-chaine = "@glitch_channel"                  # identifiant, pour les appels API (poster, vérifier admin)
-id = 8350799876
+CHANEL = "https://t.me/glitch_chanel"       # lien cliquable, pour les boutons
+chaine = "@glitch_channel"                   # identifiant, pour les appels API (poster, vérifier admin)
 
 bouton_channel = InlineKeyboardMarkup([
     [InlineKeyboardButton("🌸 GLITCH CHANNEL", url=CHANEL)]
@@ -40,7 +37,7 @@ async def goodbye(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
 
 async def security(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
     if mode_poster.get(upd.effective_user.id):
-        return  # en train de poster dans la chaîne, on ne modère pas ce texte
+        return
 
     user = upd.effective_user
     msg = upd.message.text
@@ -62,7 +59,7 @@ async def security(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
                 )
             except Exception:
                 pass
-            return  # un seul lien détecté suffit, pas besoin de continuer la boucle
+            return
 
 
 async def kick(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
@@ -80,7 +77,7 @@ async def kick(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
 
 async def anti_foward(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
     if upd.effective_user.id == 777000:
-        return  # message auto de la chaîne liée, pas un vrai forward à sanctionner
+        return  # message auto de la chaîne liée, pas un vrai forward
 
     if mode_poster.get(upd.effective_user.id):
         return
@@ -170,7 +167,7 @@ async def post(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
 async def recevoir_post(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
     user_id = upd.effective_user.id
     if not mode_poster.get(user_id):
-        return  # pas en mode poster, on ignore ce message
+        return
 
     message = upd.message
 
