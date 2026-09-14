@@ -150,6 +150,7 @@ app.add_handler(MessageHandler(filters.ALL & ~filters.COMMAND, anti_foward), gro
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("kick", kick))
 app.add_handler(CommandHandler("tagall", tagall))
+app.add_handler(CommandHandler("myid", myid))
 app.add_handler(CommandHandler("post", post))
 app.add_handler(CallbackQueryHandler(bouton_clique))
 

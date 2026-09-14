@@ -152,6 +152,12 @@ async def tagall(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
 
 # ---------- POST ADMIN DANS LA CHAÎNE ----------
 
+# ---------- DEBUG ----------
+
+async def myid(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
+    await upd.message.reply_text(f"Ton ID Telegram : {upd.effective_user.id}\nID autorisé dans le code : {id}")
+
+
 async def post(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
     user_id = upd.effective_user.id
 
