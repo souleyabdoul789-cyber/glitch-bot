@@ -144,7 +144,7 @@ app.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, goodbye))
 
 # --- modération ---
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, security), group=2)
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, anti_foward), group=3)
+app.add_handler(MessageHandler(filters.ALL & ~filters.COMMAND, anti_foward), group=3)
 
 # --- commandes ---
 app.add_handler(CommandHandler("start", start))

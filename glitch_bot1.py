@@ -19,18 +19,20 @@ mode_poster = {}         # {user_id: True/False} pour le post admin dans la cha�
 async def welcome(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
     nombre_membres = await ctn.bot.get_chat_member_count(chat_id=upd.effective_chat.id)
     for member in upd.message.new_chat_members:
+        mention = f'<a href="tg://user?id={member.id}">{member.first_name}</a>'
         await upd.message.reply_text(
-            f"""BIENVENUE **{member.first_name}** DANS **{upd.effective_chat.title}** avec **{nombre_membres}** Membres\n\n```Merci N'oublie pas de T'abonné```""",
-            parse_mode="MarkdownV2",
+            f"BIENVENUE {mention} DANS <b>{upd.effective_chat.title}</b> avec <b>{nombre_membres}</b> Membres\n\nMerci, n'oublie pas de t'abonner",
+            parse_mode=HTML,
             reply_markup=bouton_channel
         )
 
 
 async def goodbye(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
     gb = upd.message.left_chat_member
+    mention = f'<a href="tg://user?id={gb.id}">{gb.first_name}</a>'
     await upd.message.reply_text(
-        f"Nous Sommes Ravie de Faire Ta connaissance aurevoire Trés chére Cobail\n**{gb.first_name}**\n```Abonne toi```",
-        parse_mode="MarkdownV2",
+        f"Nous sommes ravis d'avoir fait ta connaissance, au revoir {mention}\nAbonne toi à la chaîne",
+        parse_mode=HTML,
         reply_markup=bouton_channel
     )
 
