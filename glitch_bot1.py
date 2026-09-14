@@ -42,6 +42,7 @@ async def security(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
         return
 
     user = upd.effective_user
+    mention = f'<a href="tg://user?id={user.id}">{user.first_name}</a>'
     msg = upd.message.text
     liens = ["http://", "https://", "t.me/"]
     for l in liens:
@@ -56,7 +57,8 @@ async def security(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
                     until_date=fin_mute
                 )
                 await upd.message.reply_text(
-                    f"{user.first_name} Les Liens ne sont pas autorises dans ce groupe, Vous pouvez plus envoyez de message jusqu'au {fin_mute}",
+                    f"{mention} Les Liens ne sont pas autorises dans ce groupe, Vous pouvez plus envoyez de message jusqu'au {fin_mute}",
+                    parse_mode=HTML,
                     reply_markup=bouton_channel
                 )
             except Exception:
@@ -86,6 +88,7 @@ async def anti_foward(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
 
     if upd.message.forward_origin:
         user = upd.effective_user
+        mention = f'<a href="tg://user?id={user.id}">{user.first_name}</a>'
 
         try:
             await ctn.bot.delete_message(chat_id=upd.effective_chat.id, message_id=upd.message.message_id)
@@ -97,7 +100,8 @@ async def anti_foward(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
 
         await ctn.bot.send_message(
             chat_id=upd.effective_chat.id,
-            text=f"⚠️ {user.first_name}, le partage de messages transférés n'est pas autorisé ici. Avertissement {current}/3.",
+            text=f"⚠️ {mention}, le partage de messages transférés n'est pas autorisé ici. Avertissement {current}/3.",
+            parse_mode=HTML,
             reply_markup=bouton_channel
         )
 
@@ -111,7 +115,8 @@ async def anti_foward(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
             )
             await ctn.bot.send_message(
                 chat_id=upd.effective_chat.id,
-                text=f"{user.first_name} Vous Avez enfreins les regles de ce groupe vous pouvez plus Envoyé de messsage jusqu'à {fin_mute}",
+                text=f"{mention} Vous Avez enfreins les regles de ce groupe vous pouvez plus Envoyé de messsage jusqu'à {fin_mute}",
+                parse_mode=HTML,
                 reply_markup=bouton_channel
             )
 
