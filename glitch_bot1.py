@@ -6,6 +6,7 @@ from telegram.constants import ParseMode
 HTML = ParseMode.HTML
 CHANEL = "https://t.me/glitch_chanel"       # lien cliquable, pour les boutons
 chaine = "@glitch_channel"                   # identifiant, pour les appels API (poster, vérifier admin)
+ADMIN_ID = 8350799876                        # ton ID Telegram, seul autorisé à /post
 
 bouton_channel = InlineKeyboardMarkup([
     [InlineKeyboardButton("🌸 GLITCH CHANNEL", url=CHANEL)]
@@ -155,13 +156,13 @@ async def tagall(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
 # ---------- DEBUG ----------
 
 async def myid(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
-    await upd.message.reply_text(f"Ton ID Telegram : {upd.effective_user.id}\nID autorisé dans le code : {id}")
+    await upd.message.reply_text(f"Ton ID Telegram : {upd.effective_user.id}\nID autorisé dans le code : {ADMIN_ID}")
 
 
 async def post(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
     user_id = upd.effective_user.id
 
-    if user_id != id:
+    if user_id != ADMIN_ID:
         await upd.message.reply_text("Tu n'es pas autorisé à poster dans la chaîne.", reply_markup=bouton_channel)
         return
 
