@@ -5,7 +5,7 @@ from telegram.constants import ParseMode
 
 HTML = ParseMode.HTML
 CHANEL = "https://t.me/glitch_chanel"       # lien cliquable, pour les boutons
-chaine = "@glitch_channel"                   # identifiant, pour les appels API (poster, vérifier admin)
+chaine = "@glitch_chanel"                    # identifiant, pour les appels API (poster, vérifier admin)
 ADMIN_ID = 8350799876                        # ton ID Telegram, seul autorisé à /post
 
 bouton_channel = InlineKeyboardMarkup([
@@ -177,16 +177,21 @@ async def recevoir_post(upd: Update, ctn: ContextTypes.DEFAULT_TYPE):
 
     message = upd.message
 
-    if message.photo:
-        await ctn.bot.send_photo(
-            chat_id=chaine,
-            photo=message.photo[-1].file_id,
-            caption=message.caption or "",
-            reply_markup=bouton_channel
-        )
-    elif message.text:
-        await ctn.bot.send_message(chat_id=chaine, text=message.text, reply_markup=bouton_channel)
+    try:
+        if message.photo:
+            await ctn.bot.send_photo(
+                chat_id=chaine,
+                photo=message.photo[-1].file_id,
+                caption=message.caption or "",
+                reply_markup=bouton_channel
+            )
+        elif message.text:
+            await ctn.bot.send_message(chat_id=chaine, text=message.text, reply_markup=bouton_channel)
 
-    mode_poster[user_id] = False
-    await message.reply_text("✅ Posté dans la chaîne.")
+        mode_poster[user_id] = False
+        await message.reply_text("✅ Posté dans la chaîne.")
+
+    except Exception as e:
+        mode_poster[user_id] = False
+        await message.reply_text(f"❌ Échec du post : {e}")
 
