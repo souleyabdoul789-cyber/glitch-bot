@@ -21,6 +21,7 @@ from telegram.ext import ApplicationBuilder, MessageHandler, CommandHandler, Cal
 from groq import Groq
 from glitch_bot1 import *
 from subcribe import *
+from download_commands import play, video
 from dotenv import load_dotenv
 import os
 
@@ -152,7 +153,10 @@ app.add_handler(CommandHandler("kick", kick))
 app.add_handler(CommandHandler("tagall", tagall))
 app.add_handler(CommandHandler("myid", myid))
 app.add_handler(CommandHandler("post", post))
+app.add_handler(CommandHandler("play", play))
+app.add_handler(CommandHandler("video", video))
 app.add_handler(CallbackQueryHandler(bouton_clique))
 
 app.run_polling()
+
 
